@@ -1,5 +1,9 @@
 # Pronamic Maps
 
+## npm scripts
+
+- npm run js-build
+
 ## Links
 
 - https://github.com/BaguettePHP/http-accept-language

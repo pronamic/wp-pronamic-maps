@@ -1,0 +1,21 @@
+{
+  "name": "pronamic-maps",
+  "version": "1.0.0",
+  "description": "Pronamic Maps integration",
+  "scripts": {
+    "js-build": "cp src/js/pronamic-maps.js js/pronamic-maps.js && terser --output js/pronamic-maps.min.js src/js/pronamic-maps.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pronamic/wp-pronamic-maps.git"
+  },
+  "author": "Pronamic",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/pronamic/wp-pronamic-maps/issues"
+  },
+  "homepage": "https://github.com/pronamic/wp-pronamic-maps#readme",
+  "devDependencies": {
+    "terser": "^5.7.1"
+  }
+}

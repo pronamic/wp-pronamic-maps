@@ -23,6 +23,9 @@
  * @package   Pronamic\WordPress\Maps
  */
 
+define( 'PRONAMIC_MAPS_PATH', plugin_dir_path( __FILE__ ) );
+define( 'PRONAMIC_MAPS_URL', plugin_dir_url( __FILE__ ) );
+
 /**
  * Adding custom REST API endpoint.
  *
@@ -101,3 +104,8 @@ function pronamic_maps_rest_api_location_self( WP_REST_Request $request ) {
 	 */
 	return $response;
 }
+
+/**
+ * Autopopulate address
+ */
+require PRONAMIC_MAPS_PATH . 'includes/autopopulate-address.php';
