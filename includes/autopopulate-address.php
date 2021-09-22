@@ -150,6 +150,8 @@ function pronamic_maps_rest_api_location_address( WP_REST_Request $request ) {
 
 /**
  * REST API request to Nationaal georegister.
+ * 
+ * @link https://github.com/PDOK/locatieserver/wiki/API-Locatieserver
  *
  * @param string  $address Address.
  * @param object  $data    Address data.
