@@ -39,7 +39,21 @@ define( 'PRONAMIC_MAPS_URL', plugin_dir_url( __FILE__ ) );
 			'POST',
 		),
 		'callback'            => 'pronamic_maps_rest_api_location_self',
-		'permission_callback' => '__return_true',
+		'permission_callback' => function() {
+			$referer = \wp_get_raw_referer();
+
+			if ( false === $referer ) {
+				return true;
+			}
+
+			$url = \wp_validate_redirect( $referer );
+
+			if ( '' === $url ) {
+				return false;
+			}
+
+			return true;
+		},
 		'args'                => array(
 			/**
 			 * A cache-buster is a unique string which is appended to a URL 
@@ -56,6 +70,67 @@ define( 'PRONAMIC_MAPS_URL', plugin_dir_url( __FILE__ ) );
 			),
 			't'  => array(
 				'description' => __( 'Cache Busting Query Parameter.', 'pronamic-maps' ),
+				'type'        => 'string',
+			),
+		),
+	) );
+
+	\register_rest_route( 'pronamic-maps/v1', '/address/autocomplete', array(
+		'methods'             => array(
+			'GET',
+			'POST',
+		),
+		'callback'            => function( WP_REST_Request $request ) {
+			$postcode     = $request->get_param( 'postcode' );
+			$country_code = $request->get_param( 'country_code' );
+			$city         = $request->get_param( 'city' );
+
+			$address = (object) array(
+				'country_code' => $country_code,
+				'postcode'     => $postcode,
+				'city'         => $city,
+				'street_name'  => null,
+				'house_number' => null,
+				'latitude'     => null,
+				'longitude'    => null,
+			);
+
+			if ( 'NL' == $country_code ) {
+				$address = pronamic_maps_nationaal_georegister_request( $address );
+			} else {
+				$address = pronamic_maps_google_request( $address );
+			}
+			
+			return (object) array(
+				'address' => $address,
+			);
+		},
+		'permission_callback' => function() {
+			$referer = \wp_get_raw_referer();
+
+			if ( false === $referer ) {
+				return true;
+			}
+
+			$url = \wp_validate_redirect( $referer );
+
+			if ( '' === $url ) {
+				return false;
+			}
+
+			return true;
+		},
+		'args'                => array(
+			'postcode'     => array(
+				'description' => __( 'Postcode.', 'pronamic-maps' ),
+				'type'        => 'string',
+			),
+			'country_code' => array(
+				'description' => __( 'Country Code.', 'pronamic-maps' ),
+				'type'        => 'string',
+			),
+			'city'         => array(
+				'description' => __( 'City.', 'pronamic-maps' ),
 				'type'        => 'string',
 			),
 		),

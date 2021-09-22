@@ -156,59 +156,65 @@ function pronamic_maps_rest_api_location_address( WP_REST_Request $request ) {
  *
  * @return object $data Address data.
  */
-function pronamic_maps_nationaal_georegister_request( $address, $data ) {
+function pronamic_maps_nationaal_georegister_request( $address ) {
 	// Suggest request.
 	$url = sprintf(
 		'https://geodata.nationaalgeoregister.nl/locatieserver/v3/%s?%s',
 		'suggest',
 		_http_build_query(
 			array(
-				'q' => $address,
+				'q' => \str_replace( ' ', '', $address->postcode ),
 			)
 		)
 	);
 
 	$response = wp_remote_get( $url );
 
-	if ( ! is_wp_error( $response ) ) {
-		$body = $response['body'];
+	if ( \is_wp_error( $response ) ) {
+		return $address;
+	}
 
-		$response_data = json_decode( $body, true );
+	$data = \json_decode( \wp_remote_retrieve_body( $response ) );
 
-		if ( ! empty( $response_data['response']['docs'][0]['id'] ) ) {
-			$location_id = $response_data['response']['docs'][0]['id'];
+	$documents = $data->response->docs;
+
+	if ( empty( $address->street_name ) || empty( $address->city ) ) {
+		$documents_postcode = array_filter( $documents, function( $document ) {
+			return ( 'postcode' === $document->type );
+		} );
+
+		if ( 1 === \count( $documents_postcode ) ) {
+			foreach ( $documents_postcode as $document ) {
+				$url = sprintf(
+					'https://geodata.nationaalgeoregister.nl/locatieserver/v3/%s?%s',
+					'lookup',
+					_http_build_query(
+						array(
+							'id' => $document->id,
+						)
+					)
+				);
+
+				$response = wp_remote_get( $url );
+
+				$data = \json_decode( \wp_remote_retrieve_body( $response ) );
+
+				if ( 1 === \count( $data->response->docs ) ) {
+					foreach ( $data->response->docs as $item ) {
+						if ( empty( $address->street_name ) ) {
+							$address->street_name = $item->straatnaam;
+						}
+
+						if ( empty( $address->city ) ) {
+							$address->city = $item->woonplaatsnaam;
+						}
+					}
+				}
+			}
 		}
 	}
 
-	if ( empty( $location_id ) ) {
-		return $data;
-	} 
-
-	// Lookup request.
-	$url = sprintf(
-		'https://geodata.nationaalgeoregister.nl/locatieserver/v3/%s?%s',
-		'lookup',
-		_http_build_query(
-			array(
-				'id' => $location_id,
-			)
-		)
-	);
-
-	$response = wp_remote_get( $url );
-
-	if ( ! is_wp_error( $response ) ) {
-		$body = $response['body'];
-
-		$response_data = json_decode( $body, true );
-
-		if ( ! empty( $response_data['response']['docs'][0]['woonplaatsnaam'] ) ) {
-			$data->address->city   = $response_data['response']['docs'][0]['woonplaatsnaam'];
-			$data->address->street = $response_data['response']['docs'][0]['straatnaam'];
-		}
-	}
-
-	return $data;
+	return $address;
 }
 
 /**
