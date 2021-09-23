@@ -1,50 +1,30 @@
-/**
- * Init
- *
- * @param {string} sourceElement  Source dom element.
- * @param {object} targetElements Target dom elements.
- */
-function PronamicMapsFields( sourceElement, targetElements = {} ) {
-	if ( sourceElement === null ) {
-		return;
+var gravityforms = document.querySelectorAll( '.gform_wrapper' );
+
+gravityforms.forEach( ( gravityform ) => {
+	var input_postcode = gravityform.querySelector( '[autocomplete="postal-code"]' );
+
+	var address = {
+		'postcode': ( null === input_postcode ) ? null : input_postcode.value
 	}
 
-	fetch( '/wp-json/pronamic-maps/v1/address/' + sourceElement.value )
-		.then( response => response.json() )
-		.then( data => PronamicMapsAutopopulateFields( data, targetElements ) );
-}
+	fetch(
+		pronamic_maps.rest_url_address_autocomplete,
+		{
+  			method: 'POST',
+  			headers: {
+  				'Content-Type': 'application/json',
+  			},
+  			body: JSON.stringify( address ),
+		}
+	)
+	.then( response => response.json() )
+	.then( data => {
+		var inputs = gravityform.querySelectorAll( '[autocomplete="address-level2"]' );
 
-/**
- * Autopopulate fields
- *
- * @param {object} data           Address data.
- * @param {object} targetElements Target dom elements.
- */
-function PronamicMapsAutopopulateFields( data, targetElements ) {
-	// Address
-	if ( targetElements.address !== undefined && targetElements.street_number !== undefined ) {
-		targetElements.address.value = data.address.street + ' ' + data.address.street_number;
-	}
-
-	// Street
-	if ( targetElements.address !== undefined ) {
-		targetElements.address.value = data.address.street;
-	}
-
-	// City
-	if ( targetElements.city !== undefined ) {
-		targetElements.city.value = data.address.city;
-	}
-}
-
-/**
- * Demo
- */
-sourceElement = document.getElementById( 'input_3_3' );
-
-targetElements = {
-	'address': document.getElementById( 'input_3_2' ),
-	'city': document.getElementById( 'input_3_4' )
-};
-
-PronamicMapsFields( sourceElement, targetElements );
+		inputs.forEach( ( input ) => {
+			if ( '' === input.value ) {
+				input.value = data.address.city;
+			}
+		} );
+	} );
+} );

@@ -109,6 +109,11 @@ class PronamicMapsPlugin {
 		\add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
 		\add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
+		\add_action( 'gform_field_advanced_settings', array( $this, 'gform_field_advanced_settings' ), 10, 2 );
+		\add_action( 'gform_editor_js', array( $this, 'gform_editor_js' ), 10 );
+
+		\add_filter( 'gform_field_container', array( $this, 'gform_field_container' ), 10, 2 );
 	}
 
 	/**
@@ -185,15 +190,25 @@ class PronamicMapsPlugin {
 	 * Enqueue scripts.
 	 */
 	public function enqueue_scripts() {
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
 		\wp_register_script(
-			'pronamic-maps-autopopulate-address',
-			PRONAMIC_MAPS_URL . 'js/pronamic-maps.min.js',
+			'pronamic-maps-address-autocomplete',
+			\plugins_url( 'js/pronamic-maps' . $suffix . '.js', __FILE__ ),
 			array(),
 			'1.0.0',
 			true
 		);
 
-		\wp_enqueue_script( 'pronamic-maps-autopopulate-address' );
+		\wp_localize_script(
+			'pronamic-maps-address-autocomplete',
+			'pronamic_maps',
+			array(
+				'rest_url_address_autocomplete' => \rest_url( 'pronamic-maps/v1/address/autocomplete' ),
+			)
+		);
+
+		\wp_enqueue_script( 'pronamic-maps-address-autocomplete' );
 	}
 
 	/**
@@ -370,6 +385,75 @@ class PronamicMapsPlugin {
 		}
 
 		return $address;
+	}
+
+	/**
+	 * Gravity Forms field advanced settings.
+	 *
+	 * @link https://docs.gravityforms.com/gform_field_standard_settings/
+	 * @link https://github.com/wp-premium/gravityforms/blob/2.4.12/form_detail.php#L1364-L1366
+	 */
+	public function gform_field_advanced_settings( $position, $form_id ) {
+		if ( 175 !== $position ) {
+			return;
+		}
+
+		?>
+		<li class="pronamic_maps_autocomplete_setting field_setting">
+			<input type="checkbox" id="field_pronamic_maps_autocomplete" />
+
+			<label for="field_pronamic_maps_autocomplete" class="inline"><?php esc_html_e( 'Enable Pronamic Maps Autocomplete', 'lookup' ); ?></label>
+		</li>	
+		<?php
+	}
+
+	/**
+	 * Gravity Forms editor JavaScript.
+	 *
+	 * @link https://docs.gravityforms.com/gform_field_standard_settings/
+	 */
+	public function gform_editor_js() {
+		?>
+		<script type="text/javascript">
+			fieldSettings.address  += ', .pronamic_maps_autocomplete_setting';
+			fieldSettings.text     += ', .pronamic_maps_autocomplete_setting';
+
+			jQuery( document ).on( 'gform_load_field_settings', function( event, field, form ) {
+				jQuery( '#field_pronamic_maps_autocomplete' ).prop( 'checked', field.pronamic_maps_autocomplete );
+			} );
+
+			jQuery( document ).ready( function() {
+				jQuery( '#field_pronamic_maps_autocomplete' ).on( 'change input propertychange', function() {
+					SetFieldProperty( 'pronamic_maps_autocomplete', this.checked );
+				} );
+			} );
+		</script>
+		<?php
+	}
+
+	/**
+	 * Gravity Forms field container.
+	 * 
+	 * @link https://docs.gravityforms.com/gform_field_container/
+	 * @param string $field_container Field container.
+	 * @param object $field           The field currently being processed.
+	 */
+	public function gform_field_container( $field_container, $field ) {
+		if ( ! \property_exists( $field, 'pronamic_maps_autocomplete' ) ) {
+			return $field_container;
+		}
+
+		if ( true !== $field->pronamic_maps_autocomplete ) {
+			return $field_container;
+		}
+
+		$field_container = \str_replace(
+			'{FIELD_CONTENT}',
+			'<div data-pronamic-maps-address-autocomplete="true">{FIELD_CONTENT}</div>',
+			$field_container
+		);
+
+		return $field_container;
 	}
 }
 
