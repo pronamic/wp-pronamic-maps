@@ -23,9 +23,6 @@
  * @package   Pronamic\WordPress\Maps
  */
 
-define( 'PRONAMIC_MAPS_PATH', plugin_dir_path( __FILE__ ) );
-define( 'PRONAMIC_MAPS_URL', plugin_dir_url( __FILE__ ) );
-
 class PronamicMapsPlugin {
 	public function setup() {
 		/**
@@ -83,8 +80,8 @@ class PronamicMapsPlugin {
 						'longitude'    => null,
 					);
 
-					$address = pronamic_maps_nationaal_georegister_request( $address );
-					$address = pronamic_maps_get_coordinates( $address );
+					$address = $this->complete_address_via_dutch_pdok( $address );
+					$address = $this->complete_address_via_google( $address );
 					
 					return (object) array(
 						'address' => $address,
@@ -107,6 +104,96 @@ class PronamicMapsPlugin {
 				),
 			) );
 		} );
+
+		\add_action( 'admin_init', array( $this, 'admin_init' ) );
+		\add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+
+		\add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+	}
+
+	/**
+	 * Admin init.
+	 */
+	public function admin_init() {
+		\add_settings_section(
+			'pronamic_maps_settings_section_general',
+			\__( 'Settings', 'pronamic-maps' ),
+			'__return_false',
+			'pronamic_maps_settings_page_general'
+		);
+
+		\register_setting( 'pronamic_maps_settings_page_general', 'pronamic_maps_google_geo_api_key' );
+
+		\add_settings_field(
+			'pronamic_maps_google_geo_api_key',
+			\__( 'Google geocoding API key', 'pronamic-maps' ),
+			array( $this, 'field_input_text' ),
+			'pronamic_maps_settings_page_general',
+			'pronamic_maps_settings_section_general',
+			array(
+				'label_for' => 'pronamic_maps_google_geo_api_key',
+			)
+		);
+	}
+
+	/**
+	 * Admin menu.
+	 */
+	public function admin_menu() {
+		\add_options_page(
+			__( 'Pronamic Maps', 'pronamic-maps' ),
+			__( 'Pronamic Maps', 'pronamic-maps' ),
+			'manage_options', 
+			'pronamic_maps_settings', 
+			array( $this, 'page_settings' )
+		);
+	}
+
+	/**
+	 * Page settings.
+	 */
+	public function page_settings() {
+		?>
+		<form action="options.php" method="post">
+			<?php
+
+			\settings_fields( 'pronamic_maps_settings_page_general' );
+
+			\do_settings_sections( 'pronamic_maps_settings_page_general' );
+
+			\submit_button();
+
+			?>
+		</form>
+		<?php
+	}
+
+	/**
+	 * Field text
+	 */
+	public function field_input_text( $args ) {
+		printf(
+			'<input name="%s" id="%s" type="text" value="%s" class="%s" />',
+			\esc_attr( $args['label_for'] ),
+			\esc_attr( $args['label_for'] ),
+			\esc_attr( get_option( $args['label_for'] ) ),
+			'regular-text'
+		);
+	}
+
+	/**
+	 * Enqueue scripts.
+	 */
+	public function enqueue_scripts() {
+		\wp_register_script(
+			'pronamic-maps-autopopulate-address',
+			PRONAMIC_MAPS_URL . 'js/pronamic-maps.min.js',
+			array(),
+			'1.0.0',
+			true
+		);
+
+		\wp_enqueue_script( 'pronamic-maps-autopopulate-address' );
 	}
 
 	/**
@@ -172,13 +259,120 @@ class PronamicMapsPlugin {
 		 */
 		return $response;
 	}
+
+	/**
+	 * Complete address via Dutch PDOK.
+	 * 
+	 * @link https://geodata.nationaalgeoregister.nl/
+	 * @param object $address Address to complete.
+	 * @return object
+	 */
+	public function complete_address_via_dutch_pdok( $address ) {
+		if ( 'NL' !== $address->country_code ) {
+			return $address;
+		}
+
+		// Suggest request.
+		$url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free';
+
+		$url = \add_query_arg(
+			array(
+				'q'  => \str_replace( ' ', '', $address->postcode ),
+				'fq' => 'type:postcode',
+			),
+			$url
+		);
+
+		$response = \wp_remote_get( $url );
+
+		if ( \is_wp_error( $response ) ) {
+			return $address;
+		}
+
+		$data = \json_decode( \wp_remote_retrieve_body( $response ) );
+
+		$documents = $data->response->docs;
+
+		if ( empty( $address->street_name ) || empty( $address->city ) ) {
+			if ( 1 === \count( $documents ) ) {
+				foreach ( $documents as $document ) {
+					if ( empty( $address->street_name ) ) {
+						$address->street_name = $document->straatnaam;
+					}
+
+					if ( empty( $address->city ) ) {
+						$address->city = $document->woonplaatsnaam;
+					}
+				}
+			}
+		}
+
+		return $address;
+	}
+
+	/**
+	 * Complete address via Google.
+	 * 
+	 * @param object $address Address to complete.
+	 * @return object
+	 */
+	public function complete_address_via_google( $address ) {
+		$key = \get_option( 'pronamic_maps_google_geo_api_key' );
+
+		if ( empty( $key ) ) {
+			return $address;
+		}
+
+		// Request.
+		$url = 'https://maps.googleapis.com/maps/api/geocode/json';
+
+		$url = \add_query_arg(
+			array(
+				'components' => \implode(
+					'|',
+					array(
+						'postal_code:' . $address->postcode,
+						'country:' . $address->country_code,
+					)
+				),
+				'sensor'     => 'false',
+				'key'        => $key,
+			),
+			$url
+		);
+
+		$response = \wp_remote_get( $url );
+
+		if ( \is_wp_error( $response ) ) {
+			return $address;
+		}
+
+		$data = \json_decode( \wp_remote_retrieve_body( $response ) );
+
+		if ( 1 === \count( $data->results ) ) {
+			foreach ( $data->results as $item ) {
+				foreach ( $item->address_components as $component ) {
+					/**
+					 * Component `locality` indicates an incorporated city or town political entity.
+					 * 
+					 * @link https://developers.google.com/maps/documentation/geocoding/overview
+					 */
+					if ( \in_array( 'locality', $component->types ) ) {
+						if ( empty( $address->city ) ) {
+							$address->city = $component->long_name;
+						}
+					}
+				}
+
+				$address->latitude  = $item->geometry->location->lat;
+				$address->longitude = $item->geometry->location->lng;
+			}
+		}
+
+		return $address;
+	}
 }
 
 $pronamic_maps_plugin = new PronamicMapsPlugin();
 
 $pronamic_maps_plugin->setup();
-
-/**
- * Autopopulate address
- */
-require PRONAMIC_MAPS_PATH . 'includes/autopopulate-address.php';
