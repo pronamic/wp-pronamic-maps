@@ -83,18 +83,22 @@ class PronamicMapsPlugin {
 						'callback'            => function( WP_REST_Request $request ) {
 							$postcode     = $request->get_param( 'postcode' );
 							$country_code = $request->get_param( 'country_code' );
+							$country_name = $request->get_param( 'country_name' );
 							$city         = $request->get_param( 'city' );
 
 							$address = (object) array(
 								'country_code' => $country_code,
+								'country_name' => $country_name,
 								'postcode'     => $postcode,
 								'city'         => $city,
 								'street_name'  => null,
 								'house_number' => null,
+								'level_1'      => null,
 								'latitude'     => null,
 								'longitude'    => null,
 							);
 
+							$address = $this->complete_address_via_gravityforms( $address );
 							$address = $this->complete_address_via_dutch_pdok( $address );
 							$address = $this->complete_address_via_google( $address );
 					
@@ -295,6 +299,30 @@ class PronamicMapsPlugin {
 	}
 
 	/**
+	 * Complete address via Gravity Forms.
+	 * 
+	 * @param object $address Address to complete.
+	 * @return object
+	 */
+	public function complete_address_via_gravityforms( $address ) {
+		if ( ! \method_exists( 'GFCommon', 'get_country_code' ) ) {
+			return $address;
+		}
+
+		if ( ! empty( $address->country_code ) ) {
+			return $address;
+		}
+
+		if ( empty( $address->country_name ) ) {
+			return $address;
+		}
+
+		$address->country_code = \GFCommon::get_country_code( $address->country_name );
+
+		return $address;
+	}
+
+	/**
 	 * Complete address via Dutch PDOK.
 	 * 
 	 * @link https://geodata.nationaalgeoregister.nl/
@@ -336,6 +364,10 @@ class PronamicMapsPlugin {
 
 					if ( empty( $address->city ) ) {
 						$address->city = $document->woonplaatsnaam;
+					}
+
+					if ( empty( $address->level_1 ) ) {
+						$address->level_1 = $document->provincienaam;
 					}
 				}
 			}

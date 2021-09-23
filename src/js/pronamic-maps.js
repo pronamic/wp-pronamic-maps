@@ -1,10 +1,22 @@
 var gravityforms = document.querySelectorAll( '.gform_wrapper' );
 
-function pronamicMapsAutocomplete( element ) {
-	var input_postcode = element.querySelector( '[autocomplete="postal-code"]' );
+function pronamicMapsAutocomplete( element, target ) {
+	const map = {
+		'postcode': 'postal-code',
+		'city': 'address-level2',
+		'street_name': 'address-line1',
+		'country_name': 'country-name',
+		'level_1': 'address-level1',
+	}
 
-	var address = {
-		'postcode': ( null === input_postcode ) ? null : input_postcode.value
+	var address = {};
+
+	for ( const property in map ) {
+		var input = element.querySelector( '[autocomplete="' + map[ property ] + '"]' );	
+
+		if ( null !== input ) {
+			address[ property ] = input.value;
+		}
 	}
 
 	fetch(
@@ -19,19 +31,27 @@ function pronamicMapsAutocomplete( element ) {
 	)
 	.then( response => response.json() )
 	.then( data => {
-		var inputs = element.querySelectorAll( '[autocomplete="address-level2"]' );
+		for ( const property in map ) {
+			var inputs = element.querySelectorAll( '[autocomplete="' + map[ property ] + '"]' );
 
-		inputs.forEach( ( input ) => {
-			if ( '' === input.value ) {
-				input.value = data.address.city;
-			}
-		} );
+			inputs.forEach( ( input ) => {
+				if ( input === target ) {
+					return;
+				}
+
+				if ( '' !== input.value ) {
+					return;
+				}
+
+				input.value = data.address[ property ];
+			} );
+		}
 	} );
 }
 
 gravityforms.forEach( ( gravityform ) => {
 	gravityform.addEventListener( 'change', function( event ) {
-		pronamicMapsAutocomplete( gravityform );
+		pronamicMapsAutocomplete( gravityform, event.target );
 	} );
 
 	pronamicMapsAutocomplete( gravityform );	
