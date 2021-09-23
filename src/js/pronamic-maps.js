@@ -1,7 +1,7 @@
 var gravityforms = document.querySelectorAll( '.gform_wrapper' );
 
-gravityforms.forEach( ( gravityform ) => {
-	var input_postcode = gravityform.querySelector( '[autocomplete="postal-code"]' );
+function pronamicMapsAutocomplete( element ) {
+	var input_postcode = element.querySelector( '[autocomplete="postal-code"]' );
 
 	var address = {
 		'postcode': ( null === input_postcode ) ? null : input_postcode.value
@@ -10,16 +10,16 @@ gravityforms.forEach( ( gravityform ) => {
 	fetch(
 		pronamic_maps.rest_url_address_autocomplete,
 		{
-  			method: 'POST',
-  			headers: {
-  				'Content-Type': 'application/json',
-  			},
-  			body: JSON.stringify( address ),
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify( address ),
 		}
 	)
 	.then( response => response.json() )
 	.then( data => {
-		var inputs = gravityform.querySelectorAll( '[autocomplete="address-level2"]' );
+		var inputs = element.querySelectorAll( '[autocomplete="address-level2"]' );
 
 		inputs.forEach( ( input ) => {
 			if ( '' === input.value ) {
@@ -27,4 +27,12 @@ gravityforms.forEach( ( gravityform ) => {
 			}
 		} );
 	} );
+}
+
+gravityforms.forEach( ( gravityform ) => {
+	gravityform.addEventListener( 'change', function( event ) {
+		pronamicMapsAutocomplete( gravityform );
+	} );
+
+	pronamicMapsAutocomplete( gravityform );	
 } );
