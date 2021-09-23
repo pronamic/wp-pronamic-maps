@@ -116,6 +116,10 @@ class PronamicMapsPlugin {
 								'description' => __( 'Country Code.', 'pronamic-maps' ),
 								'type'        => 'string',
 							),
+							'country_name' => array(
+								'description' => __( 'Country Name.', 'pronamic-maps' ),
+								'type'        => 'string',
+							),
 							'city'         => array(
 								'description' => __( 'City.', 'pronamic-maps' ),
 								'type'        => 'string',
