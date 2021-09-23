@@ -159,15 +159,19 @@ function pronamic_maps_rest_api_location_address( WP_REST_Request $request ) {
  * @return object $data Address data.
  */
 function pronamic_maps_nationaal_georegister_request( $address ) {
+	if ( 'NL' !== $address->country_code ) {
+		return $address;
+	}
+
 	// Suggest request.
-	$url = sprintf(
-		'https://geodata.nationaalgeoregister.nl/locatieserver/v3/%s?%s',
-		'suggest',
-		_http_build_query(
-			array(
-				'q' => \str_replace( ' ', '', $address->postcode ),
-			)
-		)
+	$url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free';
+
+	$url = \add_query_arg(
+		array(
+			'q'  => \str_replace( ' ', '', $address->postcode ),
+			'fq' => 'type:postcode',
+		),
+		$url
 	);
 
 	$response = wp_remote_get( $url );
@@ -181,36 +185,14 @@ function pronamic_maps_nationaal_georegister_request( $address ) {
 	$documents = $data->response->docs;
 
 	if ( empty( $address->street_name ) || empty( $address->city ) ) {
-		$documents_postcode = array_filter( $documents, function( $document ) {
-			return ( 'postcode' === $document->type );
-		} );
+		if ( 1 === \count( $documents ) ) {
+			foreach ( $documents as $document ) {
+				if ( empty( $address->street_name ) ) {
+					$address->street_name = $document->straatnaam;
+				}
 
-		if ( 1 === \count( $documents_postcode ) ) {
-			foreach ( $documents_postcode as $document ) {
-				$url = sprintf(
-					'https://geodata.nationaalgeoregister.nl/locatieserver/v3/%s?%s',
-					'lookup',
-					_http_build_query(
-						array(
-							'id' => $document->id,
-						)
-					)
-				);
-
-				$response = wp_remote_get( $url );
-
-				$data = \json_decode( \wp_remote_retrieve_body( $response ) );
-
-				if ( 1 === \count( $data->response->docs ) ) {
-					foreach ( $data->response->docs as $item ) {
-						if ( empty( $address->street_name ) ) {
-							$address->street_name = $item->straatnaam;
-						}
-
-						if ( empty( $address->city ) ) {
-							$address->city = $item->woonplaatsnaam;
-						}
-					}
+				if ( empty( $address->city ) ) {
+					$address->city = $document->woonplaatsnaam;
 				}
 			}
 		}
@@ -227,7 +209,7 @@ function pronamic_maps_nationaal_georegister_request( $address ) {
  *
  * @return object $data
  */
-function pronamic_maps_google_request( $address, $data ) {
+function pronamic_maps_google_request( $address ) {
 
 	// Get coordinates.
 	$coordinates = pronamic_maps_get_coordinates( $address );
@@ -263,38 +245,52 @@ function pronamic_maps_get_coordinates( $address = null ) {
 	$lng = '';
 
 	// Request.
-	$url = sprintf(
-		'https://maps.googleapis.com/maps/api/%s/%s?%s',
-		'geocode',
-		'json',
-		_http_build_query(
-			array(
-				'address' => $address,
-				'sensor'  => false,
-				'key'     => $key,
-			)
-		)
+	$url = 'https://maps.googleapis.com/maps/api/geocode/json';
+
+	$url = \add_query_arg(
+		array(
+			'components' => \implode(
+				'|',
+				array(
+					'postal_code:' . $address->postcode,
+					'country:' . $address->country_code,
+				)
+			),
+			'sensor'     => 'false',
+			'key'        => $key,
+		),
+		$url
 	);
 
 	$response = wp_remote_get( $url );
 
-	if ( ! is_wp_error( $response ) ) {
-		$body = $response['body'];
-
-		$response_data = json_decode( $body, true );
-
-		if ( ! empty( $response_data['results'] ) ) {
-			$lat = $response_data['results'][0]['geometry']['location']['lat'];
-       		$lng = $response_data['results'][0]['geometry']['location']['lng'];
-    	}
+	if ( is_wp_error( $response ) ) {
+		return $address;
 	}
 
-	$coordinates = array(
-		'lat' => $lat,
-		'lng' => $lng,
-	);
+	$data = \json_decode( \wp_remote_retrieve_body( $response ) );
 
-	return $coordinates;
+	if ( 1 === count( $data->results ) ) {
+		foreach ( $data->results as $item ) {
+			foreach ( $item->address_components as $component ) {
+				/**
+				 * Component `locality` indicates an incorporated city or town political entity.
+				 * 
+				 * @link https://developers.google.com/maps/documentation/geocoding/overview
+				 */
+				if ( \in_array( 'locality', $component->types ) ) {
+					if ( empty( $address->city ) ) {
+						$address->city = $component->long_name;
+					}
+				}
+			}
+
+			$address->latitude  = $item->geometry->location->lat;
+			$address->longitude = $item->geometry->location->lng;
+		}
+	}
+
+	return $address;
 }
 
 /**

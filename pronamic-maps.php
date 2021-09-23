@@ -95,11 +95,8 @@ define( 'PRONAMIC_MAPS_URL', plugin_dir_url( __FILE__ ) );
 				'longitude'    => null,
 			);
 
-			if ( 'NL' == $country_code ) {
-				$address = pronamic_maps_nationaal_georegister_request( $address );
-			} else {
-				$address = pronamic_maps_google_request( $address );
-			}
+			$address = pronamic_maps_nationaal_georegister_request( $address );
+			$address = pronamic_maps_get_coordinates( $address );
 			
 			return (object) array(
 				'address' => $address,
