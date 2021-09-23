@@ -127,16 +127,16 @@ class PronamicMapsPlugin {
 			'pronamic_maps_settings_page_general'
 		);
 
-		\register_setting( 'pronamic_maps_settings_page_general', 'pronamic_maps_google_geo_api_key' );
+		\register_setting( 'pronamic_maps_settings_page_general', 'pronamic_maps_google_api_key' );
 
 		\add_settings_field(
-			'pronamic_maps_google_geo_api_key',
-			\__( 'Google geocoding API key', 'pronamic-maps' ),
+			'pronamic_maps_google_api_key',
+			\__( 'Google API key', 'pronamic-maps' ),
 			array( $this, 'field_input_text' ),
 			'pronamic_maps_settings_page_general',
 			'pronamic_maps_settings_section_general',
 			array(
-				'label_for' => 'pronamic_maps_google_geo_api_key',
+				'label_for' => 'pronamic_maps_google_api_key',
 			)
 		);
 	}
