@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<ruleset name="Pronamic Maps">
+	<file>.</file>
+
+	<rule ref="PronamicWP">
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get" />
+	</rule>
+</ruleset>

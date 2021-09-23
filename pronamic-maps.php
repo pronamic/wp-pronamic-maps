@@ -23,7 +23,13 @@
  * @package   Pronamic\WordPress\Maps
  */
 
+/**
+ * Pronamic Maps Plugin class.
+ */
 class PronamicMapsPlugin {
+	/**
+	 * Setup.
+	 */
 	public function setup() {
 		/**
 		 * Adding custom REST API endpoint.
@@ -31,79 +37,90 @@ class PronamicMapsPlugin {
 		 * @link https://developer.wordpress.org/rest-api/extending-the-rest-api/adding-custom-endpoints/
 		 * @link https://developer.wordpress.org/reference/functions/register_rest_route/
 		 */
-		\add_action( 'rest_api_init', function () {
-			\register_rest_route( 'pronamic-maps/v1', '/location/self', array(
-				'methods'             => array(
-					'GET',
-					'POST',
-				),
-				'callback'            => array( $this, 'rest_api_location_self' ),
-				'permission_callback' => array( $this, 'permission_callback_same_origin' ),
-				'args'                => array(
-					/**
-					 * A cache-buster is a unique string which is appended to a URL 
-					 * in the form of a query string.
-					 *
-					 * Google Tag Managers uses the `gtmcb` parameter as default.
-					 *
-					 * @link https://curtistimson.co.uk/post/front-end-dev/what-is-cache-busting/
-					 * @link https://support.google.com/tagmanager/answer/6107167?hl=en
-					 */
-					'cb' => array(
-						'description' => __( 'Cache Busting Query Parameter.', 'pronamic-maps' ),
-						'type'        => 'string',
-					),
-					't'  => array(
-						'description' => __( 'Cache Busting Query Parameter.', 'pronamic-maps' ),
-						'type'        => 'string',
-					),
-				),
-			) );
+		\add_action(
+			'rest_api_init',
+			function () {
+				\register_rest_route(
+					'pronamic-maps/v1',
+					'/location/self',
+					array(
+						'methods'             => array(
+							'GET',
+							'POST',
+						),
+						'callback'            => array( $this, 'rest_api_location_self' ),
+						'permission_callback' => array( $this, 'permission_callback_same_origin' ),
+						'args'                => array(
+							/**
+							 * A cache-buster is a unique string which is appended to a URL 
+							 * in the form of a query string.
+							 *
+							 * Google Tag Managers uses the `gtmcb` parameter as default.
+							 *
+							 * @link https://curtistimson.co.uk/post/front-end-dev/what-is-cache-busting/
+							 * @link https://support.google.com/tagmanager/answer/6107167?hl=en
+							 */
+							'cb' => array(
+								'description' => __( 'Cache Busting Query Parameter.', 'pronamic-maps' ),
+								'type'        => 'string',
+							),
+							't'  => array(
+								'description' => __( 'Cache Busting Query Parameter.', 'pronamic-maps' ),
+								'type'        => 'string',
+							),
+						),
+					) 
+				);
 
-			\register_rest_route( 'pronamic-maps/v1', '/address/autocomplete', array(
-				'methods'             => array(
-					'GET',
-					'POST',
-				),
-				'callback'            => function( WP_REST_Request $request ) {
-					$postcode     = $request->get_param( 'postcode' );
-					$country_code = $request->get_param( 'country_code' );
-					$city         = $request->get_param( 'city' );
+				\register_rest_route(
+					'pronamic-maps/v1',
+					'/address/autocomplete',
+					array(
+						'methods'             => array(
+							'GET',
+							'POST',
+						),
+						'callback'            => function( WP_REST_Request $request ) {
+							$postcode     = $request->get_param( 'postcode' );
+							$country_code = $request->get_param( 'country_code' );
+							$city         = $request->get_param( 'city' );
 
-					$address = (object) array(
-						'country_code' => $country_code,
-						'postcode'     => $postcode,
-						'city'         => $city,
-						'street_name'  => null,
-						'house_number' => null,
-						'latitude'     => null,
-						'longitude'    => null,
-					);
+							$address = (object) array(
+								'country_code' => $country_code,
+								'postcode'     => $postcode,
+								'city'         => $city,
+								'street_name'  => null,
+								'house_number' => null,
+								'latitude'     => null,
+								'longitude'    => null,
+							);
 
-					$address = $this->complete_address_via_dutch_pdok( $address );
-					$address = $this->complete_address_via_google( $address );
+							$address = $this->complete_address_via_dutch_pdok( $address );
+							$address = $this->complete_address_via_google( $address );
 					
-					return (object) array(
-						'address' => $address,
-					);
-				},
-				'permission_callback' => array( $this, 'permission_callback_same_origin' ),
-				'args'                => array(
-					'postcode'     => array(
-						'description' => __( 'Postcode.', 'pronamic-maps' ),
-						'type'        => 'string',
-					),
-					'country_code' => array(
-						'description' => __( 'Country Code.', 'pronamic-maps' ),
-						'type'        => 'string',
-					),
-					'city'         => array(
-						'description' => __( 'City.', 'pronamic-maps' ),
-						'type'        => 'string',
-					),
-				),
-			) );
-		} );
+							return (object) array(
+								'address' => $address,
+							);
+						},
+						'permission_callback' => array( $this, 'permission_callback_same_origin' ),
+						'args'                => array(
+							'postcode'     => array(
+								'description' => __( 'Postcode.', 'pronamic-maps' ),
+								'type'        => 'string',
+							),
+							'country_code' => array(
+								'description' => __( 'Country Code.', 'pronamic-maps' ),
+								'type'        => 'string',
+							),
+							'city'         => array(
+								'description' => __( 'City.', 'pronamic-maps' ),
+								'type'        => 'string',
+							),
+						),
+					) 
+				);
+			} 
+		);
 
 		\add_action( 'admin_init', array( $this, 'admin_init' ) );
 		\add_action( 'admin_menu', array( $this, 'admin_menu' ) );
@@ -174,14 +191,16 @@ class PronamicMapsPlugin {
 	}
 
 	/**
-	 * Field text
+	 * Field text.
+	 * 
+	 * @param array $args Arguments.
 	 */
 	public function field_input_text( $args ) {
-		printf(
+		\printf(
 			'<input name="%s" id="%s" type="text" value="%s" class="%s" />',
 			\esc_attr( $args['label_for'] ),
 			\esc_attr( $args['label_for'] ),
-			\esc_attr( get_option( $args['label_for'] ) ),
+			\esc_attr( \get_option( $args['label_for'] ) ),
 			'regular-text'
 		);
 	}
@@ -392,6 +411,8 @@ class PronamicMapsPlugin {
 	 *
 	 * @link https://docs.gravityforms.com/gform_field_standard_settings/
 	 * @link https://github.com/wp-premium/gravityforms/blob/2.4.12/form_detail.php#L1364-L1366
+	 * @param int    $position Position.
+	 * @param string $form_id  Form ID.
 	 */
 	public function gform_field_advanced_settings( $position, $form_id ) {
 		if ( 175 !== $position ) {
