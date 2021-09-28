@@ -98,6 +98,7 @@ class PronamicMapsPlugin {
 								'longitude'    => null,
 							);
 
+							$address = $this->complete_address_via_locale( $address );
 							$address = $this->complete_address_via_gravityforms( $address );
 							$address = $this->complete_address_via_dutch_pdok( $address );
 							$address = $this->complete_address_via_google( $address );
@@ -300,6 +301,24 @@ class PronamicMapsPlugin {
 		 * Return.
 		 */
 		return $response;
+	}
+
+	/**
+	 * Complete address via locale.
+	 * 
+	 * @param object $address Address to complete.
+	 * @return object
+	 */
+	public function complete_address_via_locale( $address ) {
+		if ( ! empty( $address->country_code ) ) {
+			return $address;
+		}
+
+		$locale = \get_locale();
+
+		$address->country_code = \substr( $locale, 3, 2 );
+
+		return $address;
 	}
 
 	/**
