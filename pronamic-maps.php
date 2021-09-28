@@ -14,7 +14,8 @@
  * Domain Path: /languages/
  *
  * License: GPL-3.0-or-later
- *
+ * 
+ * Update URI: https://www.pronamic.eu/plugins/pronamic-maps/
  * GitHub URI: https://github.com/pronamic/wp-pronamic-maps
  *
  * @author    Pronamic <info@pronamic.eu>
