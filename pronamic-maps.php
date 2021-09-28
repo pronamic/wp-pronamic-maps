@@ -478,7 +478,7 @@ class PronamicMapsPlugin {
 		<li class="pronamic_maps_autocomplete_setting field_setting">
 			<input type="checkbox" id="field_pronamic_maps_autocomplete" />
 
-			<label for="field_pronamic_maps_autocomplete" class="inline"><?php esc_html_e( 'Enable Pronamic Maps Autocomplete', 'lookup' ); ?></label>
+			<label for="field_pronamic_maps_autocomplete" class="inline"><?php esc_html_e( 'Enable Pronamic Maps Autocomplete', 'pronamic-maps' ); ?></label>
 		</li>	
 		<?php
 	}
