@@ -2,7 +2,7 @@
 
 ## Providers
 
-- [PDOK (Netherlands/Dutch)](#pdok-netherlands-dutch)
+- [PDOK (Netherlands/Dutch)](#pdok-netherlands--dutch)
 - [Google Maps](#google-maps)
 
 ### PDOK (Netherlands / Dutch)
