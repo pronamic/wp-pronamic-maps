@@ -102,6 +102,7 @@ class PronamicMapsPlugin {
 							$address = $this->complete_address_via_locale( $address );
 							$address = $this->complete_address_via_gravityforms( $address );
 							$address = $this->complete_address_via_dutch_pdok( $address );
+							$address = $this->complete_address_via_belgium_local( $address );
 							$address = $this->complete_address_via_google( $address );
 					
 							return (object) array(
@@ -395,6 +396,35 @@ class PronamicMapsPlugin {
 					}
 				}
 			}
+		}
+
+		return $address;
+	}
+
+	/**
+	 * Complete address via Belgium local postal codes data.
+	 * 
+	 * @link https://www.bpost2.be/zipcodes/files/zipcodes_num_nl_new.html
+	 * @param object $address Address to complete.
+	 * @return object
+	 */
+	public function complete_address_via_belgium_local( $address ) {
+		if ( 'BE' !== $address->country_code ) {
+			return $address;
+		}
+
+		if ( ! empty( $address->city ) ) {
+			return $address;
+		}
+
+		if ( empty( $address->postcode ) ) {
+			return $address;
+		}
+
+		$data = include __DIR__ . '/resources/belgium-postal-codes.php';
+
+		if ( \array_key_exists( $address->postcode, $data ) ) {
+			$address->city = $data[ $address->postcode ];
 		}
 
 		return $address;
