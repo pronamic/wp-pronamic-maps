@@ -44,6 +44,17 @@ function pronamicMapsAutocomplete( element, target ) {
 				}
 
 				input.value = data.address[ property ];
+
+				/**
+				 * Dispatch event.
+				 * 
+				 * @link https://github.com/pronamic/wp-pronamic-maps/issues/6
+				 * @link https://html.spec.whatwg.org/multipage/indices.html#event-input
+				 * @link https://html.spec.whatwg.org/multipage/indices.html#event-change
+				 * @link https://stackoverflow.com/questions/16250464/trigger-change-event-when-the-input-value-changed-programmatically
+				 */
+				input.dispatchEvent( new Event( 'input' ) );
+				input.dispatchEvent( new Event( 'change' ) );
 			} );
 		}
 	} );
