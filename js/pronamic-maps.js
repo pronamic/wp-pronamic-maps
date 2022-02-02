@@ -3,6 +3,7 @@
  * 
  * @link https://developer.mozilla.org/en-US/docs/Web/CSS/:autofill
  * @link https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
  */
 function pronamicMapsAutocomplete( element, target ) {
 	const map = {
@@ -75,6 +76,15 @@ function pronamicMapsAutocomplete( element, target ) {
 				 */
 				input.dispatchEvent( new Event( 'input' ) );
 				input.dispatchEvent( new Event( 'change' ) );
+			} );
+		}
+	} )
+	.catch( ( error ) => {
+		for ( const property in map ) {
+			var inputs = element.querySelectorAll( '[autocomplete="' + map[ property ] + '"]' );
+
+			inputs.forEach( ( input ) => {
+				input.classList.remove( 'pronamic-maps-autocompleting' );
 			} );
 		}
 	} );
