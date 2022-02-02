@@ -239,6 +239,15 @@ class PronamicMapsPlugin {
 		);
 
 		\wp_enqueue_script( 'pronamic-maps-address-autocomplete' );
+
+		\wp_register_style(
+			'pronamic-maps-address-autocomplete',
+			\plugins_url( 'css/pronamic-maps.css', __FILE__ ),
+			array(),
+			'1.0.0'
+		);
+
+		\wp_enqueue_style( 'pronamic-maps-address-autocomplete' );
 	}
 
 	/**

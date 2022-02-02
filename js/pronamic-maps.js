@@ -1,3 +1,9 @@
+/**
+ * Pronamic Maps autocomplete.
+ * 
+ * @link https://developer.mozilla.org/en-US/docs/Web/CSS/:autofill
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+ */
 function pronamicMapsAutocomplete( element, target ) {
 	const map = {
 		'postcode': 'postal-code',
@@ -15,6 +21,20 @@ function pronamicMapsAutocomplete( element, target ) {
 		if ( null !== input ) {
 			address[ property ] = input.value;
 		}
+
+		var inputs = element.querySelectorAll( '[autocomplete="' + map[ property ] + '"]' );
+
+		inputs.forEach( ( input ) => {
+			if ( input === target ) {
+				return;
+			}
+
+			if ( '' !== input.value ) {
+				return;
+			}
+
+			input.classList.add( 'pronamic-maps-autocompleting' );
+		} );
 	}
 
 	fetch(
@@ -33,6 +53,8 @@ function pronamicMapsAutocomplete( element, target ) {
 			var inputs = element.querySelectorAll( '[autocomplete="' + map[ property ] + '"]' );
 
 			inputs.forEach( ( input ) => {
+				input.classList.remove( 'pronamic-maps-autocompleting' );
+
 				if ( input === target ) {
 					return;
 				}
