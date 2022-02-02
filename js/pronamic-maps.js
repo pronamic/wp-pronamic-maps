@@ -1,5 +1,3 @@
-var gravityforms = document.querySelectorAll( '.gform_wrapper' );
-
 function pronamicMapsAutocomplete( element, target ) {
 	const map = {
 		'postcode': 'postal-code',
@@ -60,10 +58,28 @@ function pronamicMapsAutocomplete( element, target ) {
 	} );
 }
 
+/*
+
+var gravityforms = document.querySelectorAll( '.gform_wrapper' );
+
 gravityforms.forEach( ( gravityform ) => {
 	gravityform.addEventListener( 'change', function( event ) {
 		pronamicMapsAutocomplete( gravityform, event.target );
 	} );
 
 	pronamicMapsAutocomplete( gravityform );	
+} );
+
+*/
+
+/**
+ * Gravity Forms still uses jQuery quite intensively, for example for the `jquery.maskedinput.js` library.
+ * The `jquery.maskedinput.js` library also uses the deprecated `jQuery.fn.change()` function.
+ * 
+ * @link https://github.com/RubtsovAV/jquery.maskedinput/blob/1.4.1/src/jquery.maskedinput.js#L228
+ * @link https://stackoverflow.com/questions/25256173/can-i-use-jquery-trigger-with-event-listeners-added-with-addeventlistener
+ * @link https://github.com/jquery/jquery/issues/2476
+ */
+jQuery( '.gform_wrapper' ).on( 'change', function( event ) {
+	pronamicMapsAutocomplete( this, event.target );
 } );
