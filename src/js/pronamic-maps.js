@@ -34,6 +34,8 @@ function pronamicMapsAutocomplete( element, target ) {
 				return;
 			}
 
+			input.dispatchEvent( new Event( 'autocompleting.pronamic-maps' ) );
+
 			input.classList.add( 'pronamic-maps-autocompleting' );
 		} );
 	}
@@ -65,6 +67,8 @@ function pronamicMapsAutocomplete( element, target ) {
 				}
 
 				input.value = data.address[ property ];
+
+				input.dispatchEvent( new Event( 'autocompleted.pronamic-maps' ) );
 
 				/**
 				 * Dispatch event.
