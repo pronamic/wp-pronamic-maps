@@ -58,20 +58,6 @@ function pronamicMapsAutocomplete( element, target ) {
 	} );
 }
 
-/*
-
-var gravityforms = document.querySelectorAll( '.gform_wrapper' );
-
-gravityforms.forEach( ( gravityform ) => {
-	gravityform.addEventListener( 'change', function( event ) {
-		pronamicMapsAutocomplete( gravityform, event.target );
-	} );
-
-	pronamicMapsAutocomplete( gravityform );	
-} );
-
-*/
-
 /**
  * Gravity Forms still uses jQuery quite intensively, for example for the `jquery.maskedinput.js` library.
  * The `jquery.maskedinput.js` library also uses the deprecated `jQuery.fn.change()` function.
@@ -82,4 +68,8 @@ gravityforms.forEach( ( gravityform ) => {
  */
 jQuery( '.gform_wrapper' ).on( 'change', function( event ) {
 	pronamicMapsAutocomplete( this, event.target );
+} );
+
+jQuery( '.gform_wrapper' ).each( function() {
+	pronamicMapsAutocomplete( this );
 } );
