@@ -613,7 +613,7 @@ class PronamicMapsPlugin {
 			return $field_content;
 		}
 
-		if ( ! $field->pronamicReadonly ) {
+		if ( ! $field->pronamic_readonly ) {
 			return $field_content;
 		}
 
