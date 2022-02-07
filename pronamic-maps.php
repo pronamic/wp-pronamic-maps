@@ -142,6 +142,8 @@ class PronamicMapsPlugin {
 		\add_action( 'gform_editor_js', array( $this, 'gform_editor_js' ), 10 );
 
 		\add_filter( 'gform_field_container', array( $this, 'gform_field_container' ), 10, 2 );
+
+		\add_filter( 'gform_field_content', array( $this, 'gform_field_content' ), 10, 2 );
 	}
 
 	/**
@@ -519,6 +521,12 @@ class PronamicMapsPlugin {
 			<input type="checkbox" id="field_pronamic_maps_autocomplete" />
 
 			<label for="field_pronamic_maps_autocomplete" class="inline"><?php esc_html_e( 'Enable Pronamic Maps Autocomplete', 'pronamic-maps' ); ?></label>
+		</li>
+
+		<li class="pronamic_readonly_setting field_setting">
+			<input type="checkbox" id="field_pronamic_readonly" />
+
+			<label for="field_pronamic_readonly" class="inline"><?php esc_html_e( 'Readonly', 'pronamic-maps' ); ?></label>
 		</li>	
 		<?php
 	}
@@ -527,21 +535,33 @@ class PronamicMapsPlugin {
 	 * Gravity Forms editor JavaScript.
 	 *
 	 * @link https://docs.gravityforms.com/gform_field_standard_settings/
+	 * @link https://www.samanthaming.com/tidbits/19-2-ways-to-convert-to-boolean/
+	 * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
 	 */
 	public function gform_editor_js() {
 		?>
 		<script type="text/javascript">
 			fieldSettings.address  += ', .pronamic_maps_autocomplete_setting';
 			fieldSettings.text     += ', .pronamic_maps_autocomplete_setting';
+			fieldSettings.text     += ', .pronamic_readonly_setting';
+
+			const map = {
+				'pronamic_maps_autocomplete': '#field_pronamic_maps_autocomplete',
+				'pronamic_readonly': '#field_pronamic_readonly',
+			}
 
 			jQuery( document ).on( 'gform_load_field_settings', function( event, field, form ) {
-				jQuery( '#field_pronamic_maps_autocomplete' ).prop( 'checked', field.pronamic_maps_autocomplete );
+				for ( const property in map ) {
+					jQuery( map[ property ] ).prop( 'checked', !! field[ property ] );	
+				}
 			} );
 
 			jQuery( document ).ready( function() {
-				jQuery( '#field_pronamic_maps_autocomplete' ).on( 'change input propertychange', function() {
-					SetFieldProperty( 'pronamic_maps_autocomplete', this.checked );
-				} );
+				for ( const property in map ) {
+					jQuery( map[ property ] ).on( 'change input propertychange', function() {
+						SetFieldProperty( property, this.checked );
+					} );
+				}
 			} );
 		</script>
 		<?php
@@ -570,6 +590,56 @@ class PronamicMapsPlugin {
 		);
 
 		return $field_container;
+	}
+
+	/**
+	 * Gravity Forms field content.
+	 * 
+	 * @link https://github.com/wp-premium/gravityforms/blob/a9c8f2de051e016e096069210ecd5fb8f5a19801/form_display.php#L3397
+	 * @param string    $field_content Field content.
+	 * @param \GF_Field $field         Field.
+	 * @return string
+	 */
+	public function gform_field_content( $field_content, $field ) {
+		if ( \ GFCommon::is_form_editor() ) {
+			return $field_content;
+		}
+
+		if ( \ GFCommon::is_entry_detail() ) {
+			return $field_content;
+		}
+
+		if ( ! \property_exists( $field, 'pronamic_readonly' ) ) {
+			return $field_content;
+		}
+
+		if ( ! $field->pronamicReadonly ) {
+			return $field_content;
+		}
+
+		$document = new DOMDocument();
+
+		$result = $document->loadHTML( $field_content );
+
+		if ( false === $result ) {
+			return $field_content;
+		}
+
+		$input = $document->getElementsByTagName( 'input' )->item( 0 );
+
+		if ( null === $input ) {
+			return $field_content;
+		}
+
+		$input->setAttribute( 'readonly', 'readonly' );
+
+		$html = $document->saveHtml( $document->documentElement );
+
+		if ( false !== $html ) {
+			return $html;
+		}
+
+		return $field_content;
 	}
 }
 
