@@ -22,7 +22,7 @@ function pronamicMapsAutocomplete( element, target ) {
 
 		var input = element.querySelector( '[autocomplete="' + value + '"]' );	
 
-		if ( null !== input ) {
+		if ( null !== input && ! input.readOnly ) {
 			address[ property ] = input.value;
 		}
 
@@ -33,7 +33,7 @@ function pronamicMapsAutocomplete( element, target ) {
 				return;
 			}
 
-			if ( '' !== input.value ) {
+			if ( '' !== input.value && ! input.readOnly ) {
 				return;
 			}
 
@@ -67,7 +67,7 @@ function pronamicMapsAutocomplete( element, target ) {
 					return;
 				}
 
-				if ( '' !== input.value ) {
+				if ( '' !== input.value && ! input.readOnly ) {
 					return;
 				}
 
