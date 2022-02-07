@@ -633,6 +633,14 @@ class PronamicMapsPlugin {
 
 		$input->setAttribute( 'readonly', 'readonly' );
 
+		/**
+		 * Set `tabindex` to `-1`, no need to make element reachable
+		 * via sequential keyboard navigation.
+		 * 
+		 * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+		 */
+		$input->setAttribute( 'tabindex', '-1' );
+
 		$html = $document->saveHtml( $document->documentElement );
 
 		if ( false !== $html ) {
