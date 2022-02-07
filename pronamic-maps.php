@@ -601,11 +601,11 @@ class PronamicMapsPlugin {
 	 * @return string
 	 */
 	public function gform_field_content( $field_content, $field ) {
-		if ( \ GFCommon::is_form_editor() ) {
+		if ( \GFCommon::is_form_editor() ) {
 			return $field_content;
 		}
 
-		if ( \ GFCommon::is_entry_detail() ) {
+		if ( \GFCommon::is_entry_detail() ) {
 			return $field_content;
 		}
 
