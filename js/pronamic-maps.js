@@ -7,23 +7,26 @@
  */
 function pronamicMapsAutocomplete( element, target ) {
 	const map = {
-		'postcode': 'postal-code',
-		'city': 'address-level2',
-		'street_name': 'address-line1',
-		'country_name': 'country-name',
-		'level_1': 'address-level1',
+		'postal-code': 'postcode',
+		'address-level2': 'city',
+		'address-line1': 'street_name',
+		'street-address': 'street_name',
+		'country-name': 'country_name',
+		'address-level1': 'level_1',
 	}
 
 	var address = {};
 
-	for ( const property in map ) {
-		var input = element.querySelector( '[autocomplete="' + map[ property ] + '"]' );	
+	for ( const value in map ) {
+		var property = map[ value ];
+
+		var input = element.querySelector( '[autocomplete="' + value + '"]' );	
 
 		if ( null !== input ) {
 			address[ property ] = input.value;
 		}
 
-		var inputs = element.querySelectorAll( '[autocomplete="' + map[ property ] + '"]' );
+		var inputs = element.querySelectorAll( '[autocomplete="' + value + '"]' );
 
 		inputs.forEach( ( input ) => {
 			if ( input === target ) {
@@ -52,8 +55,10 @@ function pronamicMapsAutocomplete( element, target ) {
 	)
 	.then( response => response.json() )
 	.then( data => {
-		for ( const property in map ) {
-			var inputs = element.querySelectorAll( '[autocomplete="' + map[ property ] + '"]' );
+		for ( const value in map ) {
+			var property = map[ value ];
+
+			var inputs = element.querySelectorAll( '[autocomplete="' + value + '"]' );
 
 			inputs.forEach( ( input ) => {
 				input.classList.remove( 'pronamic-maps-autocompleting' );
@@ -84,8 +89,8 @@ function pronamicMapsAutocomplete( element, target ) {
 		}
 	} )
 	.catch( ( error ) => {
-		for ( const property in map ) {
-			var inputs = element.querySelectorAll( '[autocomplete="' + map[ property ] + '"]' );
+		for ( const value in map ) {
+			var inputs = element.querySelectorAll( '[autocomplete="' + value + '"]' );
 
 			inputs.forEach( ( input ) => {
 				input.classList.remove( 'pronamic-maps-autocompleting' );
