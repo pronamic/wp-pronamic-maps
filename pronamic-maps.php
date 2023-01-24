@@ -432,7 +432,7 @@ class PronamicMapsPlugin {
 			return $address;
 		}
 
-		$data = include __DIR__ . '/resources/belgium-postal-codes.php';
+		$data = include __DIR__ . '/resources/belgium-postal-codes-municipality.php';
 
 		if ( \array_key_exists( $address->postcode, $data ) ) {
 			$address->city = $data[ $address->postcode ];
