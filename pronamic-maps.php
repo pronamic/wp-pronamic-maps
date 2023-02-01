@@ -100,8 +100,8 @@ class PronamicMapsPlugin {
 								'longitude'    => null,
 							);
 
-							$address = $this->complete_address_via_locale( $address );
 							$address = $this->complete_address_via_gravityforms( $address );
+							$address = $this->complete_address_via_locale( $address );
 							$address = $this->complete_address_via_dutch_pdok( $address );
 							$address = $this->complete_address_via_belgium_local( $address );
 							$address = $this->complete_address_via_google( $address );
