@@ -1,0 +1,29 @@
+# Git (https://git-scm.com/)
+/.git/
+/.gitignore
+/.gitattributes
+
+# .DS_Store (https://en.wikipedia.org/wiki/.DS_Store)
+.DS_Store
+
+# JavaScript source files
+/src/
+
+# Node.js (https://nodejs.org/)
+/node_modules/
+
+# Composer
+/vendor/
+
+# PHP_CodeSniffer (https://github.com/squizlabs/PHP_CodeSniffer)
+/phpcs.xml.dist
+/phpcs.xml
+
+# @wordpress/env (https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/)
+/.wp-env.json
+
+# WordPress distribution archive (https://developer.wordpress.org/cli/commands/dist-archive/)
+/.distignore
+
+# Project
+/build/
