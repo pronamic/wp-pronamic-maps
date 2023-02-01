@@ -24,7 +24,7 @@ return array(
 	'1033' => 'RTL-TVI',
 	'1035' => 'Ministerie van het Brussels Hoofdstedelijk Gewest',
 	'1040' => 'Etterbeek',
-	'1041' => 'International Press Center',
+	'1041' => 'International press center',
 	'1043' => 'VRT',
 	'1044' => 'RTBF',
 	'1046' => 'European External Action Service',
