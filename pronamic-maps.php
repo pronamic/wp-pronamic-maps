@@ -95,6 +95,7 @@ class PronamicMapsPlugin {
 								'street_name'  => null,
 								'house_number' => null,
 								'level_1'      => null,
+								'level_2'      => $city,
 								'latitude'     => null,
 								'longitude'    => null,
 							);
@@ -399,7 +400,8 @@ class PronamicMapsPlugin {
 					}
 
 					if ( empty( $address->city ) ) {
-						$address->city = $document->woonplaatsnaam;
+						$address->city    = $document->woonplaatsnaam;
+						$address->level_2 = $document->woonplaatsnaam;
 					}
 
 					if ( empty( $address->level_1 ) ) {
@@ -432,10 +434,10 @@ class PronamicMapsPlugin {
 			return $address;
 		}
 
-		$data = include __DIR__ . '/resources/belgium-postal-codes-municipality.php';
+		$data = include __DIR__ . '/resources/belgium-postal-codes-municipalities.php';
 
 		if ( \array_key_exists( $address->postcode, $data ) ) {
-			$address->city = $data[ $address->postcode ];
+			$address->level_2 = $data[ $address->postcode ];
 		}
 
 		return $address;
@@ -490,7 +492,8 @@ class PronamicMapsPlugin {
 					 */
 					if ( \in_array( 'locality', $component->types ) ) {
 						if ( empty( $address->city ) ) {
-							$address->city = $component->long_name;
+							$address->city    = $component->long_name;
+							$address->level_2 = $component->long_name;
 						}
 					}
 				}

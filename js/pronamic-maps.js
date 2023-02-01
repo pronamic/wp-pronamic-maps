@@ -8,7 +8,7 @@
 function pronamicMapsAutocomplete( element, target ) {
 	const map = {
 		'postal-code': 'postcode',
-		'address-level2': 'city',
+		'address-level2': 'level_2',
 		'address-line1': 'street_name',
 		'street-address': 'street_name',
 		'country-name': 'country_name',
