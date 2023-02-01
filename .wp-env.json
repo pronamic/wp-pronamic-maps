@@ -1,0 +1,7 @@
+{
+	"core": null,
+	"plugins": [
+		".",
+		"https://github.com/pronamic/gravityforms/releases/download/2.6.6/gravityforms-2.6.6.zip"
+	]
+}
