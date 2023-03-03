@@ -5,16 +5,17 @@
  * @link https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
  * @link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
  */
-function pronamicMapsAutocomplete( element, target ) {
-	const map = {
-		'postal-code': 'postcode',
-		'address-level2': 'level_2',
-		'address-line1': 'street_name',
-		'street-address': 'street_name',
-		'country-name': 'country_name',
-		'address-level1': 'level_1',
-	}
 
+const map = {
+	'postal-code': 'postcode',
+	'address-level2': 'level_2',
+	'address-line1': 'street_name',
+	'street-address': 'street_name',
+	'country-name': 'country_name',
+	'address-level1': 'level_1',
+}
+
+function pronamicMapsAutocomplete( element, target ) {
 	var address = {};
 
 	for ( const value in map ) {
@@ -108,7 +109,7 @@ function pronamicMapsAutocomplete( element, target ) {
  * @link https://github.com/jquery/jquery/issues/2476
  */
 jQuery( '.gform_wrapper' ).on( 'change', function( event ) {
-	if ( ! event.target.hasAttribute( 'autocomplete' ) ) {
+	if ( ! Object.hasOwn( map, event.target.getAttribute( 'autocomplete' ) ) ) {
 		return;
 	}
 
