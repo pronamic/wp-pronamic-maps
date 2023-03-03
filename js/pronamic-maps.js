@@ -16,10 +16,12 @@ function pronamicMapsAutocomplete( element, target ) {
 		'address-level1': 'level_1',
 	}
 
-	autocompleteValue = target.getAttribute( 'autocomplete' );
+	if ( target ) {
+		autocompleteValue = target.getAttribute( 'autocomplete' );
 
-	if ( false === autocompleteValue in map ) {
-		return;
+		if ( false === autocompleteValue in map ) {
+			return;
+		}
 	}
 
 	var address = {};
