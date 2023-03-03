@@ -108,6 +108,10 @@ function pronamicMapsAutocomplete( element, target ) {
  * @link https://github.com/jquery/jquery/issues/2476
  */
 jQuery( '.gform_wrapper' ).on( 'change', function( event ) {
+	if ( ! event.target.hasAttribute( 'autocomplete' ) ) {
+		return;
+	}
+
 	pronamicMapsAutocomplete( this, event.target );
 } );
 
