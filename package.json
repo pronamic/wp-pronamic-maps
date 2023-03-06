@@ -1,22 +1,25 @@
 {
-  "name": "pronamic-maps",
-  "version": "1.0.0",
-  "description": "Pronamic Maps integration",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pronamic/wp-pronamic-maps.git"
-  },
-  "author": "Pronamic",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/pronamic/wp-pronamic-maps/issues"
-  },
-  "homepage": "https://github.com/pronamic/wp-pronamic-maps#readme",
-  "devDependencies": {
-    "@wordpress/env": "^5.10.0",
-    "terser": "^5.10.0"
-  },
-  "scripts": {
-    "js-build": "cp src/js/pronamic-maps.js js/pronamic-maps.js && terser --output js/pronamic-maps.min.js src/js/pronamic-maps.js"
-  }
+	"name": "pronamic-maps",
+	"version": "1.0.0",
+	"description": "Pronamic Maps integration",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pronamic/wp-pronamic-maps.git"
+	},
+	"author": "Pronamic",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/pronamic/wp-pronamic-maps/issues"
+	},
+	"homepage": "https://github.com/pronamic/wp-pronamic-maps#readme",
+	"config": {
+		"slug": "pronamic-maps"
+	},
+	"devDependencies": {
+		"@wordpress/env": "^5.10.0",
+		"terser": "^5.10.0"
+	},
+	"scripts": {
+		"js-build": "cp src/js/pronamic-maps.js js/pronamic-maps.js && terser --output js/pronamic-maps.min.js src/js/pronamic-maps.js"
+	}
 }
