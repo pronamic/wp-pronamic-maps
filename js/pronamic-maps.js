@@ -5,7 +5,6 @@
  * @link https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
  * @link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
  */
-
 function pronamicMapsAutocomplete( element, target ) {
 	const map = {
 		'postal-code': 'postcode',
@@ -17,9 +16,9 @@ function pronamicMapsAutocomplete( element, target ) {
 	}
 
 	if ( target ) {
-		autocompleteValue = target.getAttribute( 'autocomplete' );
+		autocomplete_value = target.getAttribute( 'autocomplete' );
 
-		if ( false === autocompleteValue in map ) {
+		if ( ! ( autocomplete_value in map ) ) {
 			return;
 		}
 	}
