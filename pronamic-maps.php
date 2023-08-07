@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Pronamic Maps
  * Plugin URI: https://www.pronamic.eu/plugins/pronamic-maps/
- * Description: 
+ * Description:
  *
  * Version: 1.0.1
  * Requires at least: 4.7
@@ -14,7 +14,7 @@
  * Domain Path: /languages/
  *
  * License: GPL-3.0-or-later
- * 
+ *
  * Update URI: https://www.pronamic.eu/plugins/pronamic-maps/
  * GitHub URI: https://github.com/pronamic/wp-pronamic-maps
  *
@@ -53,7 +53,7 @@ class PronamicMapsPlugin {
 						'permission_callback' => array( $this, 'permission_callback_same_origin' ),
 						'args'                => array(
 							/**
-							 * A cache-buster is a unique string which is appended to a URL 
+							 * A cache-buster is a unique string which is appended to a URL
 							 * in the form of a query string.
 							 *
 							 * Google Tag Managers uses the `gtmcb` parameter as default.
@@ -70,7 +70,7 @@ class PronamicMapsPlugin {
 								'type'        => 'string',
 							),
 						),
-					) 
+					)
 				);
 
 				\register_rest_route(
@@ -105,7 +105,7 @@ class PronamicMapsPlugin {
 							$address = $this->complete_address_via_dutch_pdok( $address );
 							$address = $this->complete_address_via_belgium_local( $address );
 							$address = $this->complete_address_via_google( $address );
-					
+
 							return (object) array(
 								'address' => $address,
 							);
@@ -129,9 +129,9 @@ class PronamicMapsPlugin {
 								'type'        => 'string',
 							),
 						),
-					) 
+					)
 				);
-			} 
+			}
 		);
 
 		\add_action( 'admin_init', array( $this, 'admin_init' ) );
@@ -179,8 +179,8 @@ class PronamicMapsPlugin {
 		\add_options_page(
 			__( 'Pronamic Maps', 'pronamic-maps' ),
 			__( 'Pronamic Maps', 'pronamic-maps' ),
-			'manage_options', 
-			'pronamic_maps_settings', 
+			'manage_options',
+			'pronamic_maps_settings',
 			array( $this, 'page_settings' )
 		);
 	}
@@ -206,7 +206,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Field text.
-	 * 
+	 *
 	 * @param array $args Arguments.
 	 */
 	public function field_input_text( $args ) {
@@ -319,7 +319,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Complete address via locale.
-	 * 
+	 *
 	 * @param object $address Address to complete.
 	 * @return object
 	 */
@@ -337,7 +337,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Complete address via Gravity Forms.
-	 * 
+	 *
 	 * @param object $address Address to complete.
 	 * @return object
 	 */
@@ -361,7 +361,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Complete address via Dutch PDOK.
-	 * 
+	 *
 	 * @link https://geodata.nationaalgeoregister.nl/
 	 * @param object $address Address to complete.
 	 * @return object
@@ -372,7 +372,7 @@ class PronamicMapsPlugin {
 		}
 
 		// Suggest request.
-		$url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free';
+		$url = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1/free';
 
 		$url = \add_query_arg(
 			array(
@@ -416,7 +416,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Complete address via Belgium local postal codes data.
-	 * 
+	 *
 	 * @link https://www.bpost2.be/zipcodes/files/zipcodes_num_nl_new.html
 	 * @param object $address Address to complete.
 	 * @return object
@@ -445,7 +445,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Complete address via Google.
-	 * 
+	 *
 	 * @param object $address Address to complete.
 	 * @return object
 	 */
@@ -487,7 +487,7 @@ class PronamicMapsPlugin {
 				foreach ( $item->address_components as $component ) {
 					/**
 					 * Component `locality` indicates an incorporated city or town political entity.
-					 * 
+					 *
 					 * @link https://developers.google.com/maps/documentation/geocoding/overview
 					 */
 					if ( \in_array( 'locality', $component->types ) ) {
@@ -530,7 +530,7 @@ class PronamicMapsPlugin {
 			<input type="checkbox" id="field_pronamic_readonly" />
 
 			<label for="field_pronamic_readonly" class="inline"><?php esc_html_e( 'Readonly', 'pronamic-maps' ); ?></label>
-		</li>	
+		</li>
 		<?php
 	}
 
@@ -555,7 +555,7 @@ class PronamicMapsPlugin {
 
 			jQuery( document ).on( 'gform_load_field_settings', function( event, field, form ) {
 				for ( const property in map ) {
-					jQuery( map[ property ] ).prop( 'checked', !! field[ property ] );	
+					jQuery( map[ property ] ).prop( 'checked', !! field[ property ] );
 				}
 			} );
 
@@ -572,7 +572,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Gravity Forms field container.
-	 * 
+	 *
 	 * @link https://docs.gravityforms.com/gform_field_container/
 	 * @param string $field_container Field container.
 	 * @param object $field           The field currently being processed.
@@ -597,7 +597,7 @@ class PronamicMapsPlugin {
 
 	/**
 	 * Gravity Forms field content.
-	 * 
+	 *
 	 * @link https://github.com/wp-premium/gravityforms/blob/a9c8f2de051e016e096069210ecd5fb8f5a19801/form_display.php#L3397
 	 * @param string    $field_content Field content.
 	 * @param \GF_Field $field         Field.
@@ -639,7 +639,7 @@ class PronamicMapsPlugin {
 		/**
 		 * Set `tabindex` to `-1`, no need to make element reachable
 		 * via sequential keyboard navigation.
-		 * 
+		 *
 		 * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
 		 */
 		$input->setAttribute( 'tabindex', '-1' );
