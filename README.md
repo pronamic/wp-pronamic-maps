@@ -8,7 +8,7 @@
 ### PDOK (Netherlands / Dutch)
 
 To autocomplete addresses via PDOK we use the following API:
-https://geodata.nationaalgeoregister.nl/locatieserver/v3/free
+https://api.pdok.nl/bzk/locatieserver/search/v3_1/free
 
 #### FAQ
 

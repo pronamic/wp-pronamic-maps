@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/pronamic/wp-pronamic-maps/compare/1.0.1...HEAD
 
+## [1.0.2] - 2023-08-08
+### Fixed
+
+- Update PDOK endpoint https://www.pdok.nl/-/migratie-pdok-locatieserver-naar-het-nieuwe-3g-platform-afgerond
+
 ## [1.0.1] - 2023-03-06
 ### Fixed
 
