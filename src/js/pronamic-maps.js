@@ -51,6 +51,10 @@ function pronamicMapsAutocomplete( element, target ) {
 		} );
 	}
 
+	if ( 0 === Object.keys( address ).length ) {
+		return;
+	}
+
 	fetch(
 		pronamic_maps.rest_url_address_autocomplete,
 		{
