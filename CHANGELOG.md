@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/pronamic/wp-pronamic-maps/compare/1.0.1...HEAD
 
+## [1.0.3] - 2025-09-24
+
+### Fixed
+
+- Prevent unnecessary API requests for empty addresses. ([#14](https://github.com/pronamic/wp-pronamic-maps/issues/14))
+
+Full set of changes: [`1.0.2...1.0.3`][1.0.3]
+
+[1.0.3]: https://github.com/pronamic/wp-pronamic-maps/compare/v1.0.2...v1.0.3
+
 ## [1.0.2] - 2023-08-08
 ### Fixed
 
