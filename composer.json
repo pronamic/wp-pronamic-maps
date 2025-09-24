@@ -1,10 +1,10 @@
 {
 	"type": "wordpress-plugin",
 	"require-dev": {
-		"pronamic/wp-coding-standards": "^1.3",
+		"pronamic/wp-coding-standards": "^2.4",
 		"wp-cli/wp-cli": "dev-main",
 		"wp-cli/wp-cli-bundle": "dev-main",
-		"pronamic/wp-deployer": "^1.3"
+		"pronamic/pronamic-cli": "dev-main"
 	},
 	"scripts": {
 		"build": "@php tools/build.php",
