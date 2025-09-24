@@ -16,6 +16,7 @@
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
-		}
+		},
+		"wp-slug": "pronamic-maps"
 	}
 }
