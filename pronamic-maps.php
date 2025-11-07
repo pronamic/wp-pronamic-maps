@@ -367,6 +367,10 @@ class PronamicMapsPlugin {
 	 * @return object
 	 */
 	public function complete_address_via_dutch_pdok( $address ) {
+		if ( empty( $address->postcode ) ) {
+			return $address;
+		}
+
 		if ( 'NL' !== $address->country_code ) {
 			return $address;
 		}
