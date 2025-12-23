@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/pronamic/wp-pronamic-maps/compare/1.0.1...HEAD
 
+## [1.0.4] - 2025-11-07
+
+### Fixed
+
+- Don't do a PDOK request if there is no postal code.
+
 ## [1.0.3] - 2025-09-24
 
 ### Fixed
@@ -19,6 +25,7 @@ Full set of changes: [`1.0.2...1.0.3`][1.0.3]
 [1.0.3]: https://github.com/pronamic/wp-pronamic-maps/compare/v1.0.2...v1.0.3
 
 ## [1.0.2] - 2023-08-08
+
 ### Fixed
 
 - Update PDOK endpoint https://www.pdok.nl/-/migratie-pdok-locatieserver-naar-het-nieuwe-3g-platform-afgerond
