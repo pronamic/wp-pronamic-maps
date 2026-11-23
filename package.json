@@ -16,7 +16,7 @@
 		"slug": "pronamic-maps"
 	},
 	"devDependencies": {
-		"@wordpress/env": "^5.13.0",
+		"@wordpress/env": "^12.2.0",
 		"terser": "^5.16.5"
 	},
 	"scripts": {
